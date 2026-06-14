@@ -25,8 +25,8 @@ def extract_features(file_path, sr=16000):
     warnings.filterwarnings("ignore", category=FutureWarning)
 
     try:
-        # Load audio file (resampled to 16kHz mono, capped at 10s for performance)
-        y, sample_rate = librosa.load(file_path, sr=sr, duration=10.0)
+        # Load audio file (resampled to 16kHz mono)
+        y, sample_rate = librosa.load(file_path, sr=sr)
     except Exception as e:
         print(f"Error loading audio file {file_path}: {e}")
         return None

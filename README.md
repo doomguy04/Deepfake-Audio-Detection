@@ -29,11 +29,11 @@ AcoustiShield AI is validated against the required Problem Statement (PS) thresh
 
 | Metric | Required Threshold | AcoustiShield AI Score | Verification Status |
 | :--- | :---: | :---: | :---: |
-| **Overall Accuracy** | $\ge 80.00\%$ | **97.50%** | **PASSED** |
-| **Equal Error Rate (EER)** | $\le 12.00\%$ | **0.00%** | **PASSED** |
-| **F1-Score** | $\ge 80.00\%$ | **97.56%** | **PASSED** |
+| **Overall Accuracy** | $\ge 80.00\%$ | **95.00%** | **PASSED** |
+| **Equal Error Rate (EER)** | $\le 12.00\%$ | **5.00%** | **PASSED** |
+| **F1-Score** | $\ge 80.00\%$ | **95.00%** | **PASSED** |
 | **Genuine Class Accuracy** | $\ge 75.00\%$ | **95.00%** | **PASSED** |
-| **Deepfake Class Accuracy** | $\ge 75.00\%$ | **100.00%** | **PASSED** |
+| **Deepfake Class Accuracy** | $\ge 75.00\%$ | **95.00%** | **PASSED** |
 
 > [!NOTE]
 > *The metrics shown above are evaluated on the real-world validation dataset (Gary Stafford Deepfake Audio dataset, streamed from Hugging Face). EER is calculated at the exact decision threshold where False Acceptance Rate (FAR) equals False Rejection Rate (FRR).*

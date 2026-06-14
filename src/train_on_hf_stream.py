@@ -113,7 +113,7 @@ def train_on_stream(num_train_per_class=60, num_val_per_class=20):
         return
         
     print("\n=== Step 4: Training Regularized Classifier ===")
-    model = train_classifier(X_train, y_train, max_depth=12, min_samples_split=2, min_samples_leaf=1)
+    model = train_classifier(X_train, y_train, max_depth=6, min_samples_split=6, min_samples_leaf=4)
     print("Training complete.")
     
     print("\n=== Step 5: Evaluating on Validation Set ===")
