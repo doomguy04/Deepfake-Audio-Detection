@@ -90,6 +90,26 @@ st.markdown("""
         border: 2px solid transparent;
     }
     
+    .result-box h1 {
+        font-size: 1.8rem !important;
+        word-break: keep-all !important;
+        word-wrap: normal !important;
+        overflow-wrap: normal !important;
+        margin: 10px 0 !important;
+    }
+    
+    .result-box h2 {
+        font-size: 1.4rem !important;
+        word-break: keep-all !important;
+        margin: 5px 0 !important;
+    }
+    
+    .result-box h3 {
+        font-size: 1.1rem !important;
+        word-break: keep-all !important;
+        margin: 5px 0 !important;
+    }
+    
     .genuine-box {
         background-color: var(--app-success-bg);
         color: var(--app-success-text);
@@ -143,6 +163,16 @@ st.markdown("""
 MODEL_PATH = "saved_models/detector_model.joblib"
 DEMO_DATA_DIR = "demo_data"
 
+@st.cache_resource
+def load_cached_model(path):
+    if os.path.exists(path):
+        from src.model import load_model
+        try:
+            return load_model(path)
+        except Exception:
+            return None
+    return None
+
 def init_app():
     """Checks model and dataset. Retrains if needed."""
     model_exists = os.path.exists(MODEL_PATH)
@@ -150,6 +180,7 @@ def init_app():
     return model_exists, data_exists
 
 model_exists, data_exists = init_app()
+detector_model = load_cached_model(MODEL_PATH)
 
 # ================= SIDEBAR =================
 with st.sidebar:
@@ -183,6 +214,7 @@ with st.sidebar:
                 generate_dataset(DEMO_DATA_DIR)
         with st.spinner("Extracting features & training Random Forest..."):
             metrics = run_pipeline(DEMO_DATA_DIR, MODEL_PATH)
+            st.cache_resource.clear()
             st.success("Model trained and saved!")
             st.rerun()
             
@@ -204,6 +236,7 @@ if not model_exists:
         with st.spinner("Generating synthetic data and training classifier..."):
             generate_dataset(DEMO_DATA_DIR)
             run_pipeline(DEMO_DATA_DIR, MODEL_PATH)
+            st.cache_resource.clear()
             st.success("Setup complete! Model is now running.")
             st.rerun()
     st.stop()
@@ -251,7 +284,6 @@ with tab1:
         audio_path = None
         if uploaded_file is not None:
             # Save uploaded buffer to a temporary file
-            uploaded_file.seek(0)  # Reset buffer pointer to prevent empty reads on page reruns
             suffix = os.path.splitext(uploaded_file.name)[1]
             with tempfile.NamedTemporaryFile(delete=False, suffix=suffix) as tmp:
                 tmp.write(uploaded_file.read())
@@ -266,7 +298,7 @@ with tab1:
                 
                 with st.spinner("Extracting features and conducting spectral forensic analysis..."):
                     # Run prediction
-                    result = predict_audio(audio_path, MODEL_PATH)
+                    result = predict_audio(audio_path, detector_model if detector_model is not None else MODEL_PATH)
                     
                 if result:
                     # Render results block
@@ -310,8 +342,8 @@ with tab1:
             
             if audio_path:
                 try:
-                    # Load audio for display (capped at 10s for performance)
-                    y, sr = librosa.load(audio_path, sr=16000, duration=10.0)
+                    # Load audio for display
+                    y, sr = librosa.load(audio_path, sr=16000)
                     
                     # Plot Waveform
                     fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(10, 6))
@@ -520,6 +552,27 @@ with tab3:
                     - **False Fake (FP)**: {metrics['confusion_matrix']['fp']} files (human speech flagged as fake)
                     - **False Gen (FN)**: {metrics['confusion_matrix']['fn']} files (deepfake missed by model)
                     """)
+                    
+                    st.markdown("""
+                    <table style="width: 100%; border-collapse: collapse; font-family: 'Outfit', 'Inter', sans-serif; background-color: #f7f5f0; border-radius: 8px; overflow: hidden; margin-top: 15px; border: 1px solid #d2dfb9;">
+                        <thead>
+                            <tr style="background-color: #1e1e1e; color: #c5a059; text-align: left; text-transform: uppercase; font-size: 11px; letter-spacing: 1.5px; font-weight: bold;">
+                                <th style="padding: 12px 15px;">Metric</th>
+                                <th style="padding: 12px 15px; text-align: right;">Required Threshold</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr style="border-bottom: 1px solid #e1ded8; color: #2e3e14; font-size: 14px; background-color: #fcfcf9;">
+                                <td style="padding: 12px 15px; font-weight: 500;">Overall Accuracy</td>
+                                <td style="padding: 12px 15px; text-align: right; color: #ef4444; font-weight: bold;">&ge; 80%</td>
+                            </tr>
+                            <tr style="color: #2e3e14; font-size: 14px; background-color: #fcfcf9;">
+                                <td style="padding: 12px 15px; font-weight: 500;">Equal Error Rate (EER)</td>
+                                <td style="padding: 12px 15px; text-align: right; color: #ef4444; font-weight: bold;">&le; 12%</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    """, unsafe_allow_html=True)
                     
                     # Check compliance against PS thresholds
                     passes_acc = metrics["accuracy"] >= 0.80
