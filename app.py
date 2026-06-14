@@ -322,8 +322,8 @@ with tab1:
             
             if audio_path:
                 try:
-                    # Load audio for display
-                    y, sr = librosa.load(audio_path, sr=16000)
+                    # Load audio for display (capped at 10s for performance)
+                    y, sr = librosa.load(audio_path, sr=16000, duration=10.0)
                     
                     # Plot Waveform
                     fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(10, 6))
