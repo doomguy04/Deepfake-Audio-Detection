@@ -1,0 +1,11 @@
+version: '3.8'
+
+services:
+  acoustishield-ai:
+    build: .
+    container_name: acoustishield-detector
+    ports:
+      - "8501:8501"
+    restart: unless-stopped
+    environment:
+      - PORT=8501
