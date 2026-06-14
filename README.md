@@ -1,3 +1,6 @@
+#App Link-https://acoustishield-ai.onrender.com/
+
+
 # 🛡️ AcoustiShield AI — Deepfake Audio Detection
 
 AcoustiShield AI is an industry-ready forensic machine learning application designed to classify speech recordings as **Genuine (Human)** or **Deepfake (AI-Generated)**. The platform provides a full suite of deliverables: an end-to-end Python pipeline, a trained model classifier, a CLI inference tool, a Jupyter Notebook walkthrough, and an interactive Streamlit web dashboard.
