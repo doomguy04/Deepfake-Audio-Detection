@@ -16,15 +16,12 @@ def predict_audio(file_path, model_path="saved_models/detector_model.joblib"):
         print(f"Error: Audio file not found at: {file_path}")
         return None
         
-    # Load model / check path
-    if isinstance(model_path, str):
-        if not os.path.exists(model_path):
-            print(f"Error: Trained model file not found at: {model_path}")
-            print("Please run the training pipeline first: python3 src/train.py")
-            return None
-        model = load_model(model_path)
-    else:
-        model = model_path
+    if not os.path.exists(model_path):
+        print(f"Error: Trained model file not found at: {model_path}")
+        print("Please run the training pipeline first: python3 src/train.py")
+        return None
+        
+    model = load_model(model_path)
         
     # Extract features
     # print(f"Extracting features from {os.path.basename(file_path)}...")
