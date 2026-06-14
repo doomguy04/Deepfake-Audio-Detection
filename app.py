@@ -312,6 +312,9 @@ with tab1:
                     
                     st.write(f"**AI-Generated / Synthesized Speech:** {f_prob * 100:.2f}%")
                     st.progress(f_prob)
+                else:
+                    st.error("❌ **Forensic analysis failed**: Unable to decode audio. Please ensure the file is not corrupted and is in a supported format (WAV, MP3, FLAC, or M4A).")
+                    
 
     with col2:
         with st.container(border=True):

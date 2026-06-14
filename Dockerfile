@@ -1,9 +1,10 @@
 # Use a lightweight official Python image
 FROM python:3.11-slim
 
-# Install system dependencies (libsndfile1 is required by librosa/soundfile)
+# Install system dependencies (libsndfile1 and ffmpeg are required for audio decoding)
 RUN apt-get update && apt-get install -y --no-install-recommends \
     libsndfile1 \
+    ffmpeg \
     && rm -rf /var/lib/apt/lists/*
 
 # Set working directory
