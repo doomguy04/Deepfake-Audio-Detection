@@ -264,6 +264,7 @@ with tab1:
         audio_path = None
         if uploaded_file is not None:
             # Save uploaded buffer to a temporary file
+            uploaded_file.seek(0)  # Reset buffer pointer to prevent empty reads on page reruns
             suffix = os.path.splitext(uploaded_file.name)[1]
             with tempfile.NamedTemporaryFile(delete=False, suffix=suffix) as tmp:
                 tmp.write(uploaded_file.read())
