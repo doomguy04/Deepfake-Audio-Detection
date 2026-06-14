@@ -143,6 +143,16 @@ st.markdown("""
 MODEL_PATH = "saved_models/detector_model.joblib"
 DEMO_DATA_DIR = "demo_data"
 
+@st.cache_resource
+def load_cached_model(path):
+    if os.path.exists(path):
+        from src.model import load_model
+        try:
+            return load_model(path)
+        except Exception:
+            return None
+    return None
+
 def init_app():
     """Checks model and dataset. Retrains if needed."""
     model_exists = os.path.exists(MODEL_PATH)
@@ -150,6 +160,7 @@ def init_app():
     return model_exists, data_exists
 
 model_exists, data_exists = init_app()
+detector_model = load_cached_model(MODEL_PATH)
 
 # ================= SIDEBAR =================
 with st.sidebar:
@@ -183,6 +194,7 @@ with st.sidebar:
                 generate_dataset(DEMO_DATA_DIR)
         with st.spinner("Extracting features & training Random Forest..."):
             metrics = run_pipeline(DEMO_DATA_DIR, MODEL_PATH)
+            st.cache_resource.clear()
             st.success("Model trained and saved!")
             st.rerun()
             
@@ -204,6 +216,7 @@ if not model_exists:
         with st.spinner("Generating synthetic data and training classifier..."):
             generate_dataset(DEMO_DATA_DIR)
             run_pipeline(DEMO_DATA_DIR, MODEL_PATH)
+            st.cache_resource.clear()
             st.success("Setup complete! Model is now running.")
             st.rerun()
     st.stop()
@@ -265,7 +278,7 @@ with tab1:
                 
                 with st.spinner("Extracting features and conducting spectral forensic analysis..."):
                     # Run prediction
-                    result = predict_audio(audio_path, MODEL_PATH)
+                    result = predict_audio(audio_path, detector_model if detector_model is not None else MODEL_PATH)
                     
                 if result:
                     # Render results block
